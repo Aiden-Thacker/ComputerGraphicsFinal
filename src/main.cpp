@@ -29,7 +29,12 @@ void SpawnLights(Canis::World &_world);
 void LoadMap(std::string _path);
 void Rotate(Canis::World &_world, Canis::Entity &_entity, float _deltaTime);
 
+#ifdef _WIN32
+#define main SDL_main
+extern "C" int main(int argc, char *argv[])
+#else
 int main(int argc, char *argv[])
+#endif
 {
     Canis::Init();
     Canis::InputManager inputManager;

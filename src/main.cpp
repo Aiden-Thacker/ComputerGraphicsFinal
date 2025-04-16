@@ -82,11 +82,15 @@ int main(int argc, char *argv[])
     grassShader.SetInt("MATERIAL.specular", 1);
     grassShader.SetFloat("MATERIAL.shininess", 64);
     grassShader.SetBool("WIND", true);
-    grassShader.SetFloat("WINDEFFECT", 0.2);
+    grassShader.SetFloat("WINDEFFECT", 0.1);
     grassShader.UnUse();
     /// END OF SHADER
 
     /// Load Image
+    Canis::GLTexture dirtTexture = Canis::LoadImageGL("assets/textures/grass_block_top.png", true);
+    Canis::GLTexture stoneTexture = Canis::LoadImageGL("assets/textures/cobblestone.png", true);
+    Canis::GLTexture woodTexture = Canis::LoadImageGL("assets/textures/oak_log.png", true);
+    Canis::GLTexture plankTexture = Canis::LoadImageGL("assets/textures/oak_planks.png", true);
     Canis::GLTexture glassTexture = Canis::LoadImageGL("assets/textures/glass.png", true);
     Canis::GLTexture grassTexture = Canis::LoadImageGL("assets/textures/grass.png", false);
     Canis::GLTexture textureSpecular = Canis::LoadImageGL("assets/textures/container2_specular.png", true);
@@ -112,9 +116,9 @@ int main(int argc, char *argv[])
 
                 switch (map[y][x][z])
                 {
-                case 1: // places a glass block
-                    entity.tag = "glass";
-                    entity.albedo = &glassTexture;
+                case 1: // places a dirt block
+                    entity.tag = "dirt";
+                    entity.albedo = &dirtTexture;
                     entity.specular = &textureSpecular;
                     entity.model = &cubeModel;
                     entity.shader = &shader;
@@ -129,6 +133,42 @@ int main(int argc, char *argv[])
                     entity.shader = &grassShader;
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     entity.Update = &Rotate;
+                    world.Spawn(entity);
+                    break;
+                case 3: // places a cobblestone block
+                    entity.tag = "cobblestone";
+                    entity.albedo = &stoneTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &cubeModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.Spawn(entity);
+                    break;
+                case 4: // places a wood block
+                    entity.tag = "wood";
+                    entity.albedo = &woodTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &cubeModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.Spawn(entity);
+                    break;
+                case 5: // places a plank block
+                    entity.tag = "plank";
+                    entity.albedo = &plankTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &cubeModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.Spawn(entity);
+                    break;
+                case 6: // places a glass block
+                    entity.tag = "glass";
+                    entity.albedo = &glassTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &cubeModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     world.Spawn(entity);
                     break;
                 default:

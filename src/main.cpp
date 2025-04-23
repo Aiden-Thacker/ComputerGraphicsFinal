@@ -92,14 +92,26 @@ int main(int argc, char *argv[])
     Canis::GLTexture woodTexture = Canis::LoadImageGL("assets/textures/oak_log.png", true);
     Canis::GLTexture plankTexture = Canis::LoadImageGL("assets/textures/oak_planks.png", true);
     Canis::GLTexture glassTexture = Canis::LoadImageGL("assets/textures/glass.png", true);
+    Canis::GLTexture actualdirtTexture = Canis::LoadImageGL("assets/textures/dirt.png", true);
     Canis::GLTexture grassTexture = Canis::LoadImageGL("assets/textures/grass.png", false);
+    Canis::GLTexture fireTexture = Canis::LoadImageGL("assets/textures/fire_textures/fire_1.png", true);
     Canis::GLTexture textureSpecular = Canis::LoadImageGL("assets/textures/container2_specular.png", true);
     /// End of Image Loading
 
     /// Load Models
     Canis::Model cubeModel = Canis::LoadModel("assets/models/cube.obj");
+    Canis::Model fireModel = Canis::LoadModel("assets/models/fire.obj");
     Canis::Model grassModel = Canis::LoadModel("assets/models/plants.obj");
     /// END OF LOADING MODEL
+
+    Canis::PointLight pointLight;
+    pointLight.position = vec3(0.0f);
+    pointLight.ambient = vec3(0.2f);
+    pointLight.diffuse = vec3(1.0f, 0.0f, 0.0f);
+    pointLight.specular = vec3(1.0f);
+    pointLight.constant = 1.0f;
+    pointLight.linear = 0.09f;
+    pointLight.quadratic = 0.032f;
 
     // Load Map into 3d array
     LoadMap("assets/maps/level.map");
@@ -171,12 +183,42 @@ int main(int argc, char *argv[])
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     world.Spawn(entity);
                     break;
+                case 7: // places a fire block
+                    entity.tag = "fire";
+                    entity.albedo = &fireTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &fireModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    pointLight.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.SpawnPointLight(pointLight);
+                    world.Spawn(entity);
+                    break;
+                case 8: // places a fire block
+                    entity.tag = "dirtdirt";
+                    entity.albedo = &actualdirtTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &cubeModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.Spawn(entity);
+                    break;
+                case 9: // places a fire block
+                    entity.tag = "leaves";
+                    entity.albedo = &actualdirtTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &cubeModel;
+                    entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.Spawn(entity);
+                    break;
                 default:
                     break;
                 }
             }
         }
     }
+
 
     double deltaTime = 0.0;
     double fps = 0.0;
@@ -248,6 +290,8 @@ void LoadMap(std::string _path)
 void SpawnLights(Canis::World &_world)
 {
     Canis::DirectionalLight directionalLight;
+    directionalLight.direction = vec3(1.0f);
+    directionalLight.ambient = vec3(0.6f);
     _world.SpawnDirectionalLight(directionalLight);
 
     Canis::PointLight pointLight;
@@ -262,17 +306,12 @@ void SpawnLights(Canis::World &_world)
     _world.SpawnPointLight(pointLight);
 
     pointLight.position = vec3(0.0f, 0.0f, 1.0f);
-    pointLight.ambient = vec3(4.0f, 0.0f, 0.0f);
+    pointLight.ambient = vec3(1.0f, 0.0f, 0.0f);
 
     _world.SpawnPointLight(pointLight);
 
     pointLight.position = vec3(-2.0f);
-    pointLight.ambient = vec3(0.0f, 4.0f, 0.0f);
-
-    _world.SpawnPointLight(pointLight);
-
-    pointLight.position = vec3(2.0f);
-    pointLight.ambient = vec3(0.0f, 0.0f, 4.0f);
+    pointLight.ambient = vec3(0.0f, 1.0f, 0.0f);
 
     _world.SpawnPointLight(pointLight);
 }

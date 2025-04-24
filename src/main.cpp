@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     window.Create("Hello Graphics", Canis::GetConfig().width, Canis::GetConfig().heigth, flags);
     /// END OF WINDOW SETUP
 
-    Canis::World world(&window, &inputManager, "assets/textures/lowpoly-skybox/");
+    Canis::World world(&window, &inputManager, "assets/textures/skybox/");
     SpawnLights(world);
 
     Canis::Editor editor(&window, &world, &inputManager);
@@ -92,6 +92,7 @@ int main(int argc, char *argv[])
     Canis::GLTexture woodTexture = Canis::LoadImageGL("assets/textures/oak_log.png", true);
     Canis::GLTexture plankTexture = Canis::LoadImageGL("assets/textures/oak_planks.png", true);
     Canis::GLTexture glassTexture = Canis::LoadImageGL("assets/textures/glass.png", true);
+    Canis::GLTexture leafTexture = Canis::LoadImageGL("assets/textures/leaf.png", true);
     Canis::GLTexture actualdirtTexture = Canis::LoadImageGL("assets/textures/dirt.png", true);
     Canis::GLTexture grassTexture = Canis::LoadImageGL("assets/textures/grass.png", false);
     Canis::GLTexture fireTexture = Canis::LoadImageGL("assets/textures/fire_textures/fire_1.png", true);
@@ -107,7 +108,7 @@ int main(int argc, char *argv[])
     Canis::PointLight pointLight;
     pointLight.position = vec3(0.0f);
     pointLight.ambient = vec3(0.2f);
-    pointLight.diffuse = vec3(1.0f, 0.0f, 0.0f);
+    pointLight.diffuse = vec3(1.0f, 0.5f, 0.0f);
     pointLight.specular = vec3(1.0f);
     pointLight.constant = 1.0f;
     pointLight.linear = 0.09f;
@@ -144,7 +145,7 @@ int main(int argc, char *argv[])
                     entity.model = &grassModel;
                     entity.shader = &grassShader;
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
-                    entity.Update = &Rotate;
+                    //entity.Update = &Rotate;
                     world.Spawn(entity);
                     break;
                 case 3: // places a cobblestone block
@@ -205,7 +206,7 @@ int main(int argc, char *argv[])
                     break;
                 case 9: // places a fire block
                     entity.tag = "leaves";
-                    entity.albedo = &actualdirtTexture;
+                    entity.albedo = &leafTexture;
                     entity.specular = &textureSpecular;
                     entity.model = &cubeModel;
                     entity.shader = &shader;

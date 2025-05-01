@@ -26,6 +26,7 @@ namespace Canis
         std::vector<Entity*> GetEntitiesWithTag(std::string _tag);
         PointLight* GetPointLight(glm::vec3 _position); // returns nullptr when light is not found
         DirectionalLight& GetDirectionalLight() { return m_directionalLight; }
+        std::vector<PointLight> m_pointLights = {};
 
     private:
         InputManager *m_inputManager;
@@ -36,7 +37,6 @@ namespace Canis
         Model m_skyboxModel;
         DirectionalLight m_directionalLight;
         std::vector<Entity> m_entities = {};
-        std::vector<PointLight> m_pointLights = {};
 
         void UpdateLights(Canis::Shader &_shader);
         void UpdateCameraMovement(double _deltaTime);

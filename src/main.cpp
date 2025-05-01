@@ -28,6 +28,11 @@ std::vector<std::vector<std::vector<unsigned int>>> map = {};
 void SpawnLights(Canis::World &_world);
 void LoadMap(std::string _path);
 void Rotate(Canis::World &_world, Canis::Entity &_entity, float _deltaTime);
+void LoadFireTextures();
+void AnimateFire(Canis::World &_world, Canis::Entity &_entity, float _deltaTime);
+
+//Create Fire
+std::vector<Canis::GLTexture> fireTextures;
 
 #ifdef _WIN32
 #define main SDL_main
@@ -53,7 +58,7 @@ int main(int argc, char *argv[])
     window.Create("Hello Graphics", Canis::GetConfig().width, Canis::GetConfig().heigth, flags);
     /// END OF WINDOW SETUP
 
-    Canis::World world(&window, &inputManager, "assets/textures/skybox/");
+    Canis::World world(&window, &inputManager, "assets/textures/lowpoly-skybox/");
     SpawnLights(world);
 
     Canis::Editor editor(&window, &world, &inputManager);
@@ -95,9 +100,14 @@ int main(int argc, char *argv[])
     Canis::GLTexture leafTexture = Canis::LoadImageGL("assets/textures/leaf.png", true);
     Canis::GLTexture actualdirtTexture = Canis::LoadImageGL("assets/textures/dirt.png", true);
     Canis::GLTexture grassTexture = Canis::LoadImageGL("assets/textures/grass.png", false);
-    Canis::GLTexture fireTexture = Canis::LoadImageGL("assets/textures/fire_textures/fire_1.png", true);
+    Canis::GLTexture flowerTexture = Canis::LoadImageGL("assets/textures/blue_orchid.png", false);
+    //Canis::GLTexture fireTexture = Canis::LoadImageGL("assets/textures/fire_textures/fire_1.png", true);
     Canis::GLTexture textureSpecular = Canis::LoadImageGL("assets/textures/container2_specular.png", true);
     /// End of Image Loading
+
+    //Load Fire Images
+    LoadFireTextures();
+    // End of Fire Loading
 
     /// Load Models
     Canis::Model cubeModel = Canis::LoadModel("assets/models/cube.obj");
@@ -129,7 +139,7 @@ int main(int argc, char *argv[])
 
                 switch (map[y][x][z])
                 {
-                case 1: // places a dirt block
+                case 1: // places a grass dirt block
                     entity.tag = "dirt";
                     entity.albedo = &dirtTexture;
                     entity.specular = &textureSpecular;
@@ -138,7 +148,7 @@ int main(int argc, char *argv[])
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     world.Spawn(entity);
                     break;
-                case 2: // places a glass block
+                case 2: // places a grass block
                     entity.tag = "grass";
                     entity.albedo = &grassTexture;
                     entity.specular = &textureSpecular;
@@ -186,16 +196,17 @@ int main(int argc, char *argv[])
                     break;
                 case 7: // places a fire block
                     entity.tag = "fire";
-                    entity.albedo = &fireTexture;
+                    entity.albedo = &fireTextures[0];
                     entity.specular = &textureSpecular;
                     entity.model = &fireModel;
                     entity.shader = &shader;
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    entity.Update = &AnimateFire;
                     pointLight.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     world.SpawnPointLight(pointLight);
                     world.Spawn(entity);
                     break;
-                case 8: // places a fire block
+                case 8: // places a dirt block
                     entity.tag = "dirtdirt";
                     entity.albedo = &actualdirtTexture;
                     entity.specular = &textureSpecular;
@@ -204,12 +215,21 @@ int main(int argc, char *argv[])
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     world.Spawn(entity);
                     break;
-                case 9: // places a fire block
+                case 9: // places a leaf block
                     entity.tag = "leaves";
                     entity.albedo = &leafTexture;
                     entity.specular = &textureSpecular;
                     entity.model = &cubeModel;
                     entity.shader = &shader;
+                    entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
+                    world.Spawn(entity);
+                    break;
+                case 10: // places a flower block
+                    entity.tag = "flower";
+                    entity.albedo = &flowerTexture;
+                    entity.specular = &textureSpecular;
+                    entity.model = &grassModel;
+                    entity.shader = &grassShader;
                     entity.transform.position = vec3(x + 0.0f, y + 0.0f, z + 0.0f);
                     world.Spawn(entity);
                     break;
@@ -288,11 +308,59 @@ void LoadMap(std::string _path)
     }
 }
 
+//Load Fire Images to Animate
+void LoadFireTextures()
+{
+    for (int i = 1; i <= 31; ++i)
+    {
+        std::string path = "assets/textures/fire_textures/fire_" + std::to_string(i) + ".png";
+        fireTextures.push_back(Canis::LoadImageGL(path, true));
+    }
+}
+
+//Swap fire (Animating the fire)
+void AnimateFire(Canis::World &_world, Canis::Entity &_entity, float _deltaTime)
+{
+    static float timer = 0.0f;
+    static int frame = 0;
+
+    timer += _deltaTime;
+
+    if (timer >= 0.5f)
+    {
+        timer = 0.0f;
+        frame = (frame + 1) % 31; // loop 0-30
+        _entity.albedo = &fireTextures[frame];
+    }
+    
+    // Light flicker effect
+    static float flickerTimer = 0.0f;
+    flickerTimer += _deltaTime;
+
+    if (flickerTimer >= 0.05f) // Flicker every ~50ms
+    {
+        flickerTimer = 0.0f;
+
+        // Random intensity between 0.8 and 1.2
+        float intensity = 0.9f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 0.3f));
+
+        // Access the light associated with this fire entity
+        for (auto& light : _world.m_pointLights)
+        {
+            if (glm::distance(light.position, _entity.transform.position) < 0.1f)
+            {
+                light.diffuse = glm::vec3(1.0f, 0.5f, 0.0f) * intensity;
+                break;
+            }
+        }
+    }
+}
+
 void SpawnLights(Canis::World &_world)
 {
     Canis::DirectionalLight directionalLight;
     directionalLight.direction = vec3(1.0f);
-    directionalLight.ambient = vec3(0.6f);
+    directionalLight.ambient = vec3(0.4f);
     _world.SpawnDirectionalLight(directionalLight);
 
     Canis::PointLight pointLight;

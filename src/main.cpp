@@ -1,6 +1,8 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <fstream>
+#include <Windows.h>
+#include <mmsystem.h>
 #include "Canis/Canis.hpp"
 #include "Canis/Entity.hpp"
 #include "Canis/Graphics.hpp"
@@ -14,6 +16,8 @@
 #include "Canis/World.hpp"
 #include "Canis/Editor.hpp"
 #include "Canis/FrameRateManager.hpp"
+
+#pragma comment(lib, "winmm.lib")
 
 using namespace glm;
 
@@ -58,7 +62,7 @@ int main(int argc, char *argv[])
     window.Create("Hello Graphics", Canis::GetConfig().width, Canis::GetConfig().heigth, flags);
     /// END OF WINDOW SETUP
 
-    Canis::World world(&window, &inputManager, "assets/textures/lowpoly-skybox/");
+    Canis::World world(&window, &inputManager, "assets/textures/skybox/");
     SpawnLights(world);
 
     Canis::Editor editor(&window, &world, &inputManager);
@@ -117,7 +121,7 @@ int main(int argc, char *argv[])
 
     Canis::PointLight pointLight;
     pointLight.position = vec3(0.0f);
-    pointLight.ambient = vec3(0.2f);
+    pointLight.ambient = vec3(0.25f);
     pointLight.diffuse = vec3(1.0f, 0.5f, 0.0f);
     pointLight.specular = vec3(1.0f);
     pointLight.constant = 1.0f;
@@ -244,6 +248,8 @@ int main(int argc, char *argv[])
     double deltaTime = 0.0;
     double fps = 0.0;
 
+    PlaySound(TEXT("assets/music/1-03. Subwoofer Lullaby.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
     // Application loop
     while (inputManager.Update(Canis::GetConfig().width, Canis::GetConfig().heigth))
     {
@@ -361,6 +367,7 @@ void SpawnLights(Canis::World &_world)
     Canis::DirectionalLight directionalLight;
     directionalLight.direction = vec3(1.0f);
     directionalLight.ambient = vec3(0.4f);
+    directionalLight.diffuse = vec3(0.1f, 0.3f, 0.1f);
     _world.SpawnDirectionalLight(directionalLight);
 
     Canis::PointLight pointLight;

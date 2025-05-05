@@ -248,6 +248,7 @@ int main(int argc, char *argv[])
     double deltaTime = 0.0;
     double fps = 0.0;
 
+    //Playing the music
     PlaySound(TEXT("assets/music/1-03. Subwoofer Lullaby.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     // Application loop

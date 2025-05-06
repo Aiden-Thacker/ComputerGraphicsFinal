@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     window.Create("Hello Graphics", Canis::GetConfig().width, Canis::GetConfig().heigth, flags);
     /// END OF WINDOW SETUP
 
-    Canis::World world(&window, &inputManager, "assets/textures/square-skybox/");
+    Canis::World world(&window, &inputManager, "assets/textures/final-skybox/");
     SpawnLights(world);
 
     Canis::Editor editor(&window, &world, &inputManager);
